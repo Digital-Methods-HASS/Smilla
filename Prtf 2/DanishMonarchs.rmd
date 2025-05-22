@@ -1,0 +1,130 @@
+---
+title: "Danish Kings"
+author: "Smilla"
+date: "5 Marts 2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load the kings
+1. Look at the dataset that are you loading and check what its columns are separated by? (hint: open it in plain text editor to see)
+
+List what is the
+
+separator:Comma (csv)
+
+2. Create a `kings` object in R with the different functions below and inspect the different outputs.
+-  `read.csv()`
+-  `read_csv()`
+-  `read.csv2()` 
+-  `read_csv2()`
+```{r}
+# FILL IN THE CODE BELOW and review the outputs
+library(tidyverse)
+kings1 <- read.csv("data/konger.csv")
+
+kings2 <- read_csv("data/konger.csv")
+kings3 <- read.csv2("data/konger.csv")
+
+kings4 <- read_csv2("data/konger.csv")
+```
+Answer: 
+1. Which of these functions is a `tidyverse` function? Read data with it below into a `kings` object
+Konger 2 og Konger 4, forskellen er de to er underscore csv, og ikke dot csv.
+
+2. What is the result of running `class()` on the `kings` object created with a tidyverse function.
+
+Man finder ud af, at navn og titel er karaktere (chr) og kolonnerne såsom regeringperiode_start_aar, osv. er tal (dbl).
+
+3. How many columns does the object have when created with these different functions?
+konger 1 har 6
+konger 2 har 6
+konger 3 har 1
+konger 4 har 1
+
+4. Show the dataset so that we can see how R interprets each column: 
+funktionen head viser hvordan R læser kolonnerne. 
+
+```{r}
+# COMPLETE THE BLANKS BELOW WITH YOUR CODE, then turn the 'eval' flag in this chunk to TRUE.
+library(tidyverse)
+konger <- read_csv("data/konger.csv")
+
+konger1 <- read.csv("data/konger.csv")
+konger2 <- read_csv("data/konger.csv")
+konger3 <- read.csv2("data/konger.csv")
+konger4 <- read_csv2("data/konger.csv")
+
+
+class(konger1)
+class(konger2)
+class(konger3)
+class(konger4)
+
+
+ncol(konger1)
+ncol(konger2)
+ncol(konger3)
+ncol(konger4)
+
+
+head(konger1)
+head(konger2)
+head(konger3)
+head(konger4)
+
+
+```
+
+
+## Calculate the duration of reign for all the kings in your table
+
+```{r}
+# YOUR CODE
+konger <- konger %>% 
+  mutate(regeringsperiode = Regeringsperiode_slut_aar - Regerinsperiode_start_aar, na.rm=TRUE)
+```
+
+## Calculate the average duration of reign for all rulers
+```{r}
+# YOUR CODE
+konger %>% 
+mean(konger$regeringsperiode, na.rm = TRUE)
+```
+
+## How many and which kings enjoyed a longer-than-average duration of reign?
+```{r}
+# YOUR CODE
+konger %>% 
+  filter(konger$regeringsperiode > 20.78431) %>% 
+  count(Navn, Titel, regeringsperiode) 
+
+```
+
+
+## How many days did the three longest-ruling monarchs rule? 
+```{r}
+# YOUR CODE
+konger %>% 
+  filter(regeringsperiode>20.78431) %>% 
+  mutate(regeringsperiode_dage=regeringsperiode*365.25) %>% 
+  arrange(desc(regeringsperiode_dage)) %>% 
+  slice(1:3)
+# .25 er pga. skudår, så den regner at hvert fjerde år (skudår) er der 366 dage på året. 
+```
+
+
+## Challenge: Plot the kings' duration of reign through time
+```{r}
+# YOUR CODE
+konger %>% 
+  mutate(midyear = Regerinsperiode_start_aar+regeringsperiode/2) %>% 
+  mutate(navn_titel = paste(Navn,Titel)) %>% 
+   ggplot(aes(x=midyear, y=regeringsperiode))+geom_point(aes(colour = navn_titel))
+```
+
+
